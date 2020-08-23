@@ -119,6 +119,66 @@ void RespondToDetection(tflite::ErrorReporter* error_reporter,
    (count = 0); // this resets the person count to 0 once the area has been sanitised by UV light
   } 
  } // In this way, a simple math function has been written by me on the arduino nano 33 ble sense which alerts people and sanitises areas
-/* cc - Dhruv Sheth */  
+/* cc - Dhruv Sheth */ 
+
+void Connect_to_Wifi()
+{
+
+  // We start by connecting to a WiFi network
+  WiFiMulti.addAP(ssid, password);
+
+  Serial.println();
+  Serial.println();
+  Serial.print("Wait for WiFi... ");
+
+  while (WiFiMulti.run() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(10);
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+}
+
+void Send_Data()
+{
+
+  Serial.println("Prepare to send data");
+
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+
+  const int httpPort = 80;
+
+  if (!client.connect(host, httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+  else
+  {
+    String data_to_send = api_key;
+    data_to_send += "&field1=";
+    data_to_send += (count);
+    data_to_send += "\r\n\r\n";
+
+    client.print("POST /update HTTP/1.1\n");
+    client.print("Host: api.thingspeak.com\n");
+    client.print("Connection: close\n");
+    client.print("X-THINGSPEAKAPIKEY: " + api_key + "\n");
+    client.print("Content-Type: application/x-www-form-urlencoded\n");
+    client.print("Content-Length: ");
+    client.print(data_to_send.length());
+    client.print("\n\n");
+    client.print(data_to_send);
+
+    delay(10);
+  }
+
+  client.stop();
+
+}
 #endif  // ARDUINO_EXCLUDE_CODE
 
