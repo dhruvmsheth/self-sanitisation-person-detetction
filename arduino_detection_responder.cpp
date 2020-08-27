@@ -40,7 +40,7 @@ const char* host = "api.thingspeak.com";
 String api_key = "RYYSAR2DUGXAMBIC"; // Your API Key provied by thingspeak
 int count = 0;
 const int LEDGREEN = 8;
-const int LEDYELLOW = 5;
+const int LEDBLUE = 5;
 const int LEDRED = 3;
 const int UV = 6;
 
@@ -107,7 +107,7 @@ void RespondToDetection(tflite::ErrorReporter* error_reporter,
   digitalWrite(LEDGREEN, LOW); // This is a green LED which means area is not contaminated yet
 }
   if (constrain(count, 51, 75)) {
-  digitalWrite(LEDYELLOW, LOW); // This is a yellow led so that people are alert that more than 50 people
+  digitalWrite(LEDBLUE, LOW); // This is a b led so that people are alert that more than 50 people
 }
  if (constrain(count, 76,100)) {
    digitalWrite(LEDRED, LOW); // This is a red LED which warns people that this area is contaminated and one should take care while touching objects
@@ -121,7 +121,7 @@ void RespondToDetection(tflite::ErrorReporter* error_reporter,
  } // In this way, a simple math function has been written by me on the arduino nano 33 ble sense which alerts people and sanitises areas
 /* cc - Dhruv Sheth */ 
 
-void Connect_to_Wifi()
+ void Connect_to_Wifi()
 {
 
   // We start by connecting to a WiFi network
@@ -161,8 +161,8 @@ void Send_Data()
   {
     String data_to_send = api_key;
     data_to_send += "&field1=";
-    data_to_send += (count);
-    data_to_send += "\r\n\r\n";
+    data_to_send += String(count);
+    data_to_send += "\r\n\";
 
     client.print("POST /update HTTP/1.1\n");
     client.print("Host: api.thingspeak.com\n");
@@ -174,11 +174,12 @@ void Send_Data()
     client.print("\n\n");
     client.print(data_to_send);
 
-    delay(10);
+    delay(10);  // reduced delay to perform real time data collection
   }
 
   client.stop();
 
 }
+
 #endif  // ARDUINO_EXCLUDE_CODE
 
